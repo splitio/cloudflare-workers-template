@@ -1,0 +1,27 @@
+name = "split-cloudflare-workers-template"
+type = "javascript"
+account_id = "<YOUR ACCOUNT ID>"
+workers_dev = true
+route = ""
+zone_id = ""
+
+[build]
+command = "npm install && npm run build"
+[build.upload]
+# The "modules" upload format is required for all projects that export a Durable Objects class
+format = "modules"
+main = "./index.mjs"
+
+[durable_objects]
+bindings = [
+  {name = "SplitStorage", class_name = "SplitStorage"},
+]
+
+# Indicate that you want the SplitStorage class to be callable as Durable Objects.
+[[migrations]]
+tag = "v1" # Should be unique for each entry
+new_classes = ["SplitStorage"]
+
+# Run synchronizer every 1 minute, to update SplitStorage if needed
+[triggers]
+crons = ["*/1 * * * *"]
