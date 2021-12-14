@@ -6,87 +6,59 @@
  * @returns {import("@splitsoftware/splitio-commons/src/storages/types").IPluggableStorageWrapper} storage wrapper
  */
 export function SplitStorageWrapper(durableObject: DurableObjectStub) {
+  function doFetch(path: string, param: string, param2?: any) {
+    // For now, fetch requires a valid URL. So we have to provide a dummy URL that will be ignored at the other end
+    // See https://github.com/cloudflare/workers-chat-demo/blob/master/src/chat.mjs#L518
+    return durableObject.fetch(
+      `https://dummy-url/${path}?param=${param}`,
+      param2 && {
+        method: "POST",
+        body: JSON.stringify(param2)
+      }
+    );
+  }
+
   return {
     /** Key-Value operations */
 
     async get(key: string) {
-      // For now, fetch requires a valid URL. So we have to provide a dummy URL that will be ignored at the other end
-      // See https://github.com/cloudflare/workers-chat-demo/blob/master/src/chat.mjs#L518
-      const response = await durableObject.fetch(
-        `https://dummy-url/get?key=${key}`
-      );
-      return response.json<string>();
+      return (await doFetch("get", key)).json<string>();
     },
     async set(key: string, value: string) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/set?key=${key}`,
-        { method: "POST", body: JSON.stringify(value) }
-      );
-      return response.ok;
+      return (await doFetch("set", key, value)).ok;
     },
     async getAndSet(key: string, value: string) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/getAndSet?key=${key}`,
-        { method: "POST", body: JSON.stringify(value) }
-      );
-      return response.json<string>();
+      return (await doFetch("getAndSet", key, value)).json<string>();
     },
     async del(key: string) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/del?key=${key}`
-      );
-      return response.ok;
+      return (await doFetch("del", key)).ok;
     },
     async getKeysByPrefix(prefix: string) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/getKeysByPrefix?prefix=${prefix}`
-      );
-      return response.json<string[]>();
+      return (await doFetch("getKeysByPrefix", prefix)).json<string[]>();
     },
     async getMany(keys: string[]) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/getMany?keys=${keys.join(",")}`
-      );
-      return response.json<string[]>();
+      return (await doFetch("getMany", keys.join(","))).json<string[]>();
     },
     async incr(key: string) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/incr?key=${key}`
-      );
-      return response.json<number>();
+      return (await doFetch("incr", key)).json<number>();
     },
     async decr(key: string) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/decr?key=${key}`
-      );
-      return response.json<number>();
+      return (await doFetch("decr", key)).json<number>();
     },
 
     /** Set operations */
 
     async itemContains(key: string, item: string) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/itemContains?key=${key}&item=${item}`
-      );
-      return response.json<boolean>();
+      return (await doFetch("itemContains", key, item)).json<boolean>();
     },
     async addItems(key: string, items: string[]) {
-      await durableObject.fetch(`https://dummy-url/addItems?key=${key}`, {
-        method: "POST",
-        body: JSON.stringify(items)
-      });
+      await doFetch("addItems", key, items);
     },
     async removeItems(key: string, items: string[]) {
-      await durableObject.fetch(`https://dummy-url/removeItems?key=${key}`, {
-        method: "POST",
-        body: JSON.stringify(items)
-      });
+      await doFetch("removeItems", key, items);
     },
     async getItems(key: string) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/getItems?key=${key}`
-      );
-      return response.json<string[]>();
+      return (await doFetch("getItems", key)).json<string[]>();
     },
 
     // No-op. No need to connect to DurableObject stub
