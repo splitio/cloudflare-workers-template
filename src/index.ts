@@ -13,7 +13,6 @@ export { SplitStorage } from "./SplitStorage";
  * Worker
  */
 export default {
-
   // Handle HTTP incoming requests
   async fetch(request: Request, env: Env) {
     const url = new URL(request.url);

@@ -14,7 +14,6 @@ export class SplitStorage {
     let url = new URL(request.url);
     let reqBody, result;
     let key = url.searchParams.get("key");
-    key = key && decodeURIComponent(key);
 
     switch (url.pathname) {
       /** Key-Value operations */
@@ -46,7 +45,7 @@ export class SplitStorage {
         break;
 
       case "/getKeysByPrefix":
-        const prefix = decodeURIComponent(url.searchParams.get("prefix")!);
+        const prefix = url.searchParams.get("prefix")!;
         result = await this.storage.list<string>({
           prefix,
           allowConcurrency: true
@@ -55,10 +54,7 @@ export class SplitStorage {
         break;
 
       case "/getMany":
-        const keys = url.searchParams
-          .get("keys")!
-          .split(",")
-          .map(key => decodeURIComponent(key));
+        const keys = url.searchParams.get("keys")!.split(",");
         const map = await this.storage.get<string>(keys, {
           allowConcurrency: true
         });
@@ -80,7 +76,7 @@ export class SplitStorage {
       /** Set operations */
 
       case "/itemContains":
-        const item = decodeURIComponent(url.searchParams.get("item")!);
+        const item = url.searchParams.get("item")!;
         result = await this.storage.get<Set<string>>(key!, {
           allowConcurrency: true
         });
