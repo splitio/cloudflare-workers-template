@@ -1,4 +1,5 @@
 import { Synchronizer } from "@splitsoftware/splitio-sync-tools";
+// Documentation: https://help.split.io/hc/en-us/articles/360058730852-Browser-SDK
 import {
   SplitFactory,
   PluggableStorage,
