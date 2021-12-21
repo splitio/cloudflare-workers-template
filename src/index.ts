@@ -97,7 +97,7 @@ async function handleGetTreatmentRequest(url: URL, env: Env) {
   });
   const client = factory.client();
 
-  // Await until the SDK is ready or has timed out, for which treatment evaluations will be 'control'.
+  // Await until the SDK is ready or timed out, for which treatment evaluations will be 'control'.
   // Timed out should never happen if SplitStorage durable object binding is properly configured.
   await new Promise(res => {
     client.on(client.Event.SDK_READY, res);
