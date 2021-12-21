@@ -11,7 +11,13 @@ import { SplitStorageWrapper } from "./SplitStorageWrapper";
 export { SplitStorage } from "./SplitStorage";
 
 /**
- * Worker
+ * Worker script.
+ *
+ * Implemented using the new "Module Worker" syntax (See https://developers.cloudflare.com/workers/learning/migrating-to-module-workers).
+ * This new syntax is required when using Durable Objects, because they are implemented by classes, and those classes need to be exported.
+ *
+ * To be deployed, this worker must be configured with a Durable Object namespace bindings call 'SplitStorage', which is already configured
+ * in the wrangler.toml file. Take into account that Durable Objects are only available with a Workers paid subscription.
  */
 export default {
   // Handle HTTP incoming requests
@@ -114,5 +120,5 @@ async function handleSynchronization(env: Env) {
   });
 
   await synchronizer.execute();
-  return new Response("Synchronization success");
+  return new Response("Synchronization finished");
 }

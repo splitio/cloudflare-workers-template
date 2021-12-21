@@ -196,7 +196,8 @@ export function SplitStorageWrapper(durableObject: DurableObjectStub) {
 
     // No-op. No need to connect to DurableObject stub
     async connect() {
-      if (!durableObject) throw new Error("Durable Object not provided");
+      // Never throws if Durable Object namespace binding is properly configured
+      if (!durableObject) throw new Error("Durable Object stub not provided");
     },
 
     // No-op. No need to disconnect from DurableObject stub

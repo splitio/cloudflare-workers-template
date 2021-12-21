@@ -59,3 +59,5 @@ Then you can send a request to `/get-treatment`, which simply evaluates a given 
 curl 'https://<YOUR-WORKER-DOMAIN>/get-treatment?key=<SOME-USER-ID>&split=<SOME-SPLIT-NAME>'
 // Treatment: on
 ```
+
+**Troubleshooting**: if you get a 500 Internal Server Error from your worker, check that `SplitStorage` durable object binding is properly configured in your wrangler.toml file. Take into account that Durable Objects are only available with a Workers paid subscription.
