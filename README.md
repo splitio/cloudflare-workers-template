@@ -4,6 +4,10 @@ Based on [Durable Objects TypeScript Rollup ES Modules template](https://github.
 
 ## Overview
 
+In Cloudflare Workers, an Split SDK must be instantiated on each incoming HTTP request where we want to evaluate features. However, by default, each instance fetches the rollout plan (i.e., splits and segments definitions) it needs to compute treatments from Split backend, impacting the response latency.
+
+To reduce the latency, this project stores the rollout plan in a [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects), a low-latency and consistent storage hosted on the same Cloudflare Workers infrastructure, and instructs the SDKs to "consume" data from that storage instead of fetching it from Split backend.
+
 The project overall architecture is ilustrated in the following diagram:
 
 <p align="center">
@@ -12,11 +16,11 @@ The project overall architecture is ilustrated in the following diagram:
 
 It has the following modules:
 
-- `src/SplitStorage.ts`: durable object class that will be used as a low-latency consistent storage for your rollout plans (i.e., splits and segments definitions).
-- `src/index.ts`: entrypoint of your Worker script, where we handle incoming HTTP requests and scheduled requests.
-  - Incoming HTTP requests (see [FetchEvent](https://developers.cloudflare.com/workers/runtime-apis/fetch-event)): these are external requests for which we provide some logic. Here the Split SDK is instantiated in "partial consumer" mode (see [consumer modes](https://help.split.io/hc/en-us/articles/360058730852-Browser-SDK#advanced-consumer-mode)). In this mode, features are evaluated by reading the rollout plan from the `SplitStorage` durable object instead of fetching it from Split backend. But unlike "consumer" mode, the SDK posts impressions and events directly to Split backend instead of storing them.
-  - Scheduled requests (see [ScheduledEvent](https://developers.cloudflare.com/workers/runtime-apis/scheduled-event)): these are requests scheduled by a CRON trigger, to execute the Split Javascript synchronizer periodically in order to check if there are new changes in your rollout plan and update the `SplitStorage` if required.
-- `src/SplitStorageWrapper.ts`: adapter used by both the Split SDK and Synchronizer to read and write data from a given `SplitStorage` instance.
+- `src/SplitStorage.ts`: durable object class that will be used as a low-latency storage for your rollout plans.
+- `src/index.ts`: entrypoint of your Cloudflare Worker script, where incoming HTTP requests and scheduled requests are handled.
+  - Incoming HTTP requests (see [Fetch Event](https://developers.cloudflare.com/workers/runtime-apis/fetch-event)) are external requests for which we provide some logic. Here the Split SDK is instantiated in "partial consumer" mode (see [consumer modes](https://help.split.io/hc/en-us/articles/360058730852-Browser-SDK#advanced-consumer-mode)). In this mode, features are evaluated by reading the rollout plan from the `SplitStorage` durable object instead of fetching it from Split backend. But unlike "consumer" mode, the SDK posts impressions and events directly to Split backend instead of storing them.
+  - Scheduled requests (see [Scheduled Event](https://developers.cloudflare.com/workers/runtime-apis/scheduled-event)) are requests scheduled by a CRON trigger to periodically execute the `Split Javascript Synchronizer`, the module in charge of storing and updating the rollout plan in a `SplitStorage` instance.
+- `src/SplitStorageWrapper.ts`: adapter used by both the Split SDK and Synchronizer which offers all the methods that the Split packages will need to read and write data from a given storage implementation, in this case the `SplitStorage` durable object instance.
 
 ## Setup
 
