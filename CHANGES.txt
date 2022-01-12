@@ -1,0 +1,2 @@
+1.0.0 (January 12, 2022)
+ - Initial public release.
