@@ -6,6 +6,18 @@
  * @returns {import("@splitsoftware/splitio-commons/src/storages/types").IPluggableStorageWrapper} storage wrapper
  */
 export function SplitStorageWrapper(durableObject: DurableObjectStub) {
+  function doFetch(path: string, param: string, param2?: any) {
+    // For now, fetch requires a valid URL. So we have to provide a dummy URL that will be ignored at the other end
+    // See https://github.com/cloudflare/workers-chat-demo/blob/master/src/chat.mjs#L518
+    return durableObject.fetch(
+      `https://dummy-url/${path}?param=${param}`,
+      param2 && {
+        method: "POST",
+        body: JSON.stringify(param2)
+      }
+    );
+  }
+
   return {
     /** Key-Value operations */
 
@@ -18,12 +30,7 @@ export function SplitStorageWrapper(durableObject: DurableObjectStub) {
      * or null if the key does not exist.
      */
     async get(key: string) {
-      // For now, fetch requires a valid URL. So we have to provide a dummy URL that will be ignored at the other end
-      // See https://github.com/cloudflare/workers-chat-demo/blob/master/src/chat.mjs#L518
-      const response = await durableObject.fetch(
-        `https://dummy-url/get?key=${key}`
-      );
-      return response.json<string>();
+      return (await doFetch("get", key)).json<string>();
     },
 
     /**
@@ -35,11 +42,7 @@ export function SplitStorageWrapper(durableObject: DurableObjectStub) {
      * @returns {Promise<boolean>} A promise that resolves if the operation success, whether the key was added or updated.
      */
     async set(key: string, value: string) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/set?key=${key}`,
-        { method: "POST", body: JSON.stringify(value) }
-      );
-      return response.ok;
+      return (await doFetch("set", key, value)).ok;
     },
 
     /**
@@ -51,11 +54,7 @@ export function SplitStorageWrapper(durableObject: DurableObjectStub) {
      * @returns {Promise<string | null>} A promise that resolves with the previous value associated to the given `key`, or null if not set.
      */
     async getAndSet(key: string, value: string) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/getAndSet?key=${key}`,
-        { method: "POST", body: JSON.stringify(value) }
-      );
-      return response.json<string>();
+      return (await doFetch("getAndSet", key, value)).json<string>();
     },
 
     /**
@@ -66,10 +65,7 @@ export function SplitStorageWrapper(durableObject: DurableObjectStub) {
      * @returns {Promise<boolean>} A promise that resolves if the operation success, whether the key existed and was removed or it didn't exist.
      */
     async del(key: string) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/del?key=${key}`
-      );
-      return response.ok;
+      return (await doFetch("del", key)).ok;
     },
 
     /**
@@ -80,10 +76,7 @@ export function SplitStorageWrapper(durableObject: DurableObjectStub) {
      * @returns {Promise<string[]>} A promise that resolves with the list of keys that match the given `prefix`.
      */
     async getKeysByPrefix(prefix: string) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/getKeysByPrefix?prefix=${prefix}`
-      );
-      return response.json<string[]>();
+      return (await doFetch("getKeysByPrefix", prefix)).json<string[]>();
     },
 
     /**
@@ -95,10 +88,7 @@ export function SplitStorageWrapper(durableObject: DurableObjectStub) {
      * For every key that does not hold a string value or does not exist, null is returned.
      */
     async getMany(keys: string[]) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/getMany?keys=${keys.join(",")}`
-      );
-      return response.json<string[]>();
+      return (await doFetch("getMany", keys.join(","))).json<string[]>();
     },
 
     /** Integer operations */
@@ -111,10 +101,7 @@ export function SplitStorageWrapper(durableObject: DurableObjectStub) {
      * @returns {Promise<number>} A promise that resolves with the value of key after the increment.
      */
     async incr(key: string) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/incr?key=${key}`
-      );
-      return response.json<number>();
+      return (await doFetch("incr", key)).json<number>();
     },
 
     /**
@@ -125,10 +112,7 @@ export function SplitStorageWrapper(durableObject: DurableObjectStub) {
      * @returns {Promise<number>} A promise that resolves with the value of key after the decrement.
      */
     async decr(key: string) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/decr?key=${key}`
-      );
-      return response.json<number>();
+      return (await doFetch("decr", key)).json<number>();
     },
 
     /** Set operations */
@@ -143,10 +127,7 @@ export function SplitStorageWrapper(durableObject: DurableObjectStub) {
      * or false if it is not a member or `key` set does not exist.
      */
     async itemContains(key: string, item: string) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/itemContains?key=${key}&item=${item}`
-      );
-      return response.json<boolean>();
+      return (await doFetch("itemContains", key, item)).json<boolean>();
     },
 
     /**
@@ -159,10 +140,7 @@ export function SplitStorageWrapper(durableObject: DurableObjectStub) {
      * @returns {Promise<boolean | void>} A promise that resolves if the operation success.
      */
     async addItems(key: string, items: string[]) {
-      await durableObject.fetch(`https://dummy-url/addItems?key=${key}`, {
-        method: "POST",
-        body: JSON.stringify(items)
-      });
+      await doFetch("addItems", key, items);
     },
 
     /**
@@ -174,10 +152,7 @@ export function SplitStorageWrapper(durableObject: DurableObjectStub) {
      * @returns {Promise<boolean | void>} A promise that resolves if the operation success. If key does not exist, the promise also resolves.
      */
     async removeItems(key: string, items: string[]) {
-      await durableObject.fetch(`https://dummy-url/removeItems?key=${key}`, {
-        method: "POST",
-        body: JSON.stringify(items)
-      });
+      await doFetch("removeItems", key, items);
     },
 
     /**
@@ -188,10 +163,7 @@ export function SplitStorageWrapper(durableObject: DurableObjectStub) {
      * @returns {Promise<string[]>} A promise that resolves with the list of items. If key does not exist, the result is an empty list.
      */
     async getItems(key: string) {
-      const response = await durableObject.fetch(
-        `https://dummy-url/getItems?key=${key}`
-      );
-      return response.json<string[]>();
+      return (await doFetch("getItems", key)).json<string[]>();
     },
 
     // No-op. No need to connect to DurableObject stub

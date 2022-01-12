@@ -13,7 +13,7 @@ export class SplitStorage {
   async fetch(request: Request) {
     let url = new URL(request.url);
     let reqBody, result;
-    let key = url.searchParams.get("key");
+    let param = url.searchParams.get("param");
 
     switch (url.pathname) {
       /** Key-Value operations */
@@ -21,40 +21,40 @@ export class SplitStorage {
       case "/get":
         // Setting allowConcurrency to improve performance. By default, the system will prevent concurrent events from executing while awaiting a read operation
         result =
-          (await this.storage.get<string>(key!, { allowConcurrency: true })) ||
-          null;
+          (await this.storage.get<string>(param!, {
+            allowConcurrency: true
+          })) || null;
         break;
 
       case "/set":
         reqBody = await request.json<string>();
         // There is no need to await write operations. Any series of write operations with no intervening await will automatically be submitted atomically
-        this.storage.put(key!, reqBody);
+        this.storage.put(param!, reqBody);
         break;
 
       case "/getAndSet":
         // Using default allowConcurrency (false), to guarantee atomic operation.
         // A series of reads followed by a series of writes are automatically atomic and behave like a transaction
-        const getResult = this.storage.get<string>(key!);
+        const getResult = this.storage.get<string>(param!);
         reqBody = await request.json<string>();
-        this.storage.put(key!, reqBody);
+        this.storage.put(param!, reqBody);
         result = (await getResult) || null;
         break;
 
       case "/del":
-        this.storage.delete(key!);
+        this.storage.delete(param!);
         break;
 
       case "/getKeysByPrefix":
-        const prefix = url.searchParams.get("prefix")!;
         result = await this.storage.list<string>({
-          prefix,
+          prefix: param!,
           allowConcurrency: true
         });
         result = Array.from(result.keys());
         break;
 
       case "/getMany":
-        const keys = url.searchParams.get("keys")!.split(",");
+        const keys = param!.split(",");
         const map = await this.storage.get<string>(keys, {
           allowConcurrency: true
         });
@@ -62,46 +62,46 @@ export class SplitStorage {
         break;
 
       case "/incr":
-        result = await this.storage.get<number>(key!); // allowConcurrency false
+        result = await this.storage.get<number>(param!); // allowConcurrency false
         result = result ? result + 1 : 1;
-        this.storage.put(key!, result);
+        this.storage.put(param!, result);
         break;
 
       case "/decr":
-        result = await this.storage.get<number>(key!); // allowConcurrency false
+        result = await this.storage.get<number>(param!); // allowConcurrency false
         result = result ? result - 1 : -1;
-        this.storage.put(key!, result);
+        this.storage.put(param!, result);
         break;
 
       /** Set operations */
 
       case "/itemContains":
-        const item = url.searchParams.get("item")!;
-        result = await this.storage.get<Set<string>>(key!, {
+        reqBody = await request.json<string>();
+        result = await this.storage.get<Set<string>>(param!, {
           allowConcurrency: true
         });
-        result = result && result.has(item) ? true : false;
+        result = result && result.has(reqBody) ? true : false;
         break;
 
       case "/addItems":
         reqBody = await request.json<string[]>();
         result =
-          (await this.storage.get<Set<string>>(key!)) || new Set<string>(); // allowConcurrency false
+          (await this.storage.get<Set<string>>(param!)) || new Set<string>(); // allowConcurrency false
         for (let i = 0; i < reqBody.length; i++) result.add(reqBody[i]);
-        this.storage.put(key!, result);
+        this.storage.put(param!, result);
         break;
 
       case "/removeItems":
         reqBody = await request.json<string[]>();
-        result = await this.storage.get<Set<string>>(key!); // allowConcurrency false
+        result = await this.storage.get<Set<string>>(param!); // allowConcurrency false
         if (result) {
           for (let i = 0; i < reqBody.length; i++) result.delete(reqBody[i]);
-          this.storage.put(key!, result);
+          this.storage.put(param!, result);
         }
         break;
 
       case "/getItems":
-        result = await this.storage.get<Set<string>>(key!, {
+        result = await this.storage.get<Set<string>>(param!, {
           allowConcurrency: true
         });
         result = Array.from(result || new Set<string>());
