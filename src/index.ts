@@ -88,12 +88,21 @@ async function handleGetTreatmentRequest(url: URL, env: Env) {
     storage: PluggableStorage({
       wrapper: SplitStorageWrapper(getSplitStorage(env))
     }),
+    startup: {
+      // If for some reason `getSplitStorage` cannot retrieve an instance, the SDK will time out almost immediately
+      readyTimeout: 0.001
+    },
     // Disable or keep only ERROR log level in production, to minimize performance impact
     debug: ErrorLogger()
   });
   const client = factory.client();
 
-  await client.ready();
+  // Await until the SDK is ready or timed out, for which treatment evaluations will be 'control'.
+  // Timed out should never happen if SplitStorage durable object binding is properly configured.
+  await new Promise(res => {
+    client.on(client.Event.SDK_READY, res);
+    client.on(client.Event.SDK_READY_TIMED_OUT, res);
+  });
 
   // Async evaluation, because it access the rollout plan from the Split Storage
   const treatment = await client.getTreatment(split);
