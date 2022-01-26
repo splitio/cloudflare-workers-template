@@ -4,7 +4,7 @@ Based on [Durable Objects TypeScript Rollup ES Modules template](https://github.
 
 ## Overview
 
-In Cloudflare Workers, an Split SDK must be instantiated on each incoming HTTP request where we want to evaluate features. However, by default, each instance fetches the rollout plan (i.e., splits and segments definitions) it needs to compute treatments from Split backend, impacting the response latency.
+In Cloudflare Workers, an Split SDK factory instance must be created on each incoming HTTP request where we want to evaluate features. However, by default, each instance fetches the rollout plan (i.e., splits and segments definitions) it needs to compute treatments from Split backend, impacting the response latency.
 
 To reduce the latency, this project stores the rollout plan in a [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects), a low-latency and consistent storage hosted on the same Cloudflare Workers infrastructure, and instructs the SDKs to "consume" data from that storage instead of fetching it from Split backend.
 
