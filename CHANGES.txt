@@ -1,3 +1,7 @@
+1.1.0 (September XX, 2022)
+ - Added support for OPTIMIZED and NONE impression modes (See @TODO).
+ - Updated dependencies for vulnerability fixes.
+
 1.0.1 (July 12, 2022)
  - Updated dependencies for vulnerability fixes.
 
