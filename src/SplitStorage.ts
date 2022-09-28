@@ -62,14 +62,16 @@ export class SplitStorage {
         break;
 
       case "/incr":
+        reqBody = await request.json<number>();
         result = await this.storage.get<number>(param!); // allowConcurrency false
-        result = result ? result + 1 : 1;
+        result = result ? result + reqBody : reqBody;
         this.storage.put(param!, result);
         break;
 
       case "/decr":
+        reqBody = await request.json<number>();
         result = await this.storage.get<number>(param!); // allowConcurrency false
-        result = result ? result - 1 : -1;
+        result = result ? result - reqBody : -reqBody;
         this.storage.put(param!, result);
         break;
 
