@@ -1,6 +1,6 @@
 {
   "name": "split-cloudflare-workers-template",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Cloudflare workers template with Durable Objects and Split Javascript SDK",
   "module": "./dist/index.mjs",
   "scripts": {
@@ -22,7 +22,7 @@
     "typescript": "^4.4.4"
   },
   "dependencies": {
-    "@splitsoftware/splitio-browserjs": "0.7.0",
-    "@splitsoftware/splitio-sync-tools": "0.1.1"
+    "@splitsoftware/splitio-browserjs": "0.8.1-rc.2",
+    "@splitsoftware/splitio-sync-tools": "0.1.2-rc.1"
   }
 }
