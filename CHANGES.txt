@@ -1,5 +1,5 @@
-1.1.0 (September XX, 2022)
- - Update Browser SDK and Javascript Sync Tools dependencies which include support for OPTIMIZED and NONE impression modes (See @TODO).
+1.1.0 (October 5, 2022)
+ - Updated Javascript Sync Tools and Browser SDK dependencies, which include support for OPTIMIZED and NONE impression modes.
  - Updated dependencies for vulnerability fixes.
 
 1.0.1 (July 12, 2022)
