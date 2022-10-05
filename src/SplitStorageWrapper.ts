@@ -94,25 +94,27 @@ export function SplitStorageWrapper(durableObject: DurableObjectStub) {
     /** Integer operations */
 
     /**
-     * Increments in 1 the given `key` value or set it to 1 if the value doesn't exist.
+     * Increments the number stored at `key` by `increment`, or set it to `increment` if the value doesn't exist.
      *
      * @function incr
      * @param {string} key Key to increment
+     * @param {number} increment Value to increment by. Defaults to 1.
      * @returns {Promise<number>} A promise that resolves with the value of key after the increment.
      */
-    async incr(key: string) {
-      return (await doFetch("incr", key)).json<number>();
+    async incr(key: string, increment = 1) {
+      return (await doFetch("incr", key, increment)).json<number>();
     },
 
     /**
-     * Decrements in 1 the given `key` value or set it to -1 if the value doesn't exist.
+     * Decrements the number stored at `key` by `decrement`, or set it to minus `decrement` if the value doesn't exist.
      *
      * @function decr
      * @param {string} key Key to decrement
+     * @param {number} decrement Value to decrement by. Defaults to 1.
      * @returns {Promise<number>} A promise that resolves with the value of key after the decrement.
      */
-    async decr(key: string) {
-      return (await doFetch("decr", key)).json<number>();
+    async decr(key: string, decrement = 1) {
+      return (await doFetch("decr", key, decrement)).json<number>();
     },
 
     /** Set operations */
