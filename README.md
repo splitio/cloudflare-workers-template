@@ -4,7 +4,7 @@ Based on [Durable Objects TypeScript Rollup ES Modules template](https://github.
 
 ## Overview
 
-In Cloudflare Workers, an Split SDK factory instance must be created on each incoming HTTP request where we want to evaluate features. However, by default, each instance fetches the rollout plan (i.e., splits and segments definitions) it needs to compute treatments from Split backend, impacting the response latency.
+In Cloudflare Workers, an Split SDK factory instance must be created on each incoming HTTP request where we want to evaluate features. However, by default, each instance fetches the rollout plan (i.e., feature flag and segment definitions) it needs to compute treatments from Split backend, impacting the response latency.
 
 To reduce the latency, this project stores the rollout plan in a [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects), a low-latency and consistent storage hosted on the same Cloudflare Workers infrastructure, and instructs the SDKs to "consume" data from that storage instead of fetching it from Split backend.
 
@@ -46,17 +46,17 @@ wrangler generate [your-project-name] https://github.com/splitio/cloudflare-work
 
 ### Testing your deployment
 
-To test your deployment, first synchronize the Split Storage with the data of your rollout plan (splits and segments definitions). For that, either wait the CRON trigger to execute, or manually perform a requests to `/sync` to instruct the worker to synchronize data.
+To test your deployment, first synchronize the Split Storage with the data of your rollout plan (feature flag and segment definitions). For that, either wait the CRON trigger to execute, or manually perform a requests to `/sync` to instruct the worker to synchronize data.
 
 ```bash
 curl 'https://<YOUR-WORKER-DOMAIN>/sync'
 // Synchronization success
 ```
 
-Then you can send a request to `/get-treatment`, which simply evaluates a given split with a given user key, provided as query params, and returns a treatment.
+Then you can send a request to `/get-treatment`, which simply evaluates a given feature flag with a given user key, provided as query params, and returns a treatment.
 
 ```bash
-curl 'https://<YOUR-WORKER-DOMAIN>/get-treatment?key=<SOME-USER-ID>&split=<SOME-SPLIT-NAME>'
+curl 'https://<YOUR-WORKER-DOMAIN>/get-treatment?key=<SOME-USER-ID>&featureFlag=<SOME-FEATURE-FLAG-NAME>'
 // Treatment: on
 ```
 

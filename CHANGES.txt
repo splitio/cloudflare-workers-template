@@ -1,3 +1,7 @@
+1.1.1 (May 10, 2023)
+ - Updated Javascript Sync Tools and Browser SDK dependencies.
+ - Updated code comments and README file, replacing the term "split" with "feature flag" for improved clarity and consistency with industry terminology.
+
 1.1.0 (October 5, 2022)
  - Updated Javascript Sync Tools and Browser SDK dependencies, which include support for OPTIMIZED and NONE impression modes.
  - Updated dependencies for vulnerability fixes.

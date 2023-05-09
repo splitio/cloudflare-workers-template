@@ -24,7 +24,7 @@ export default {
     const url = new URL(request.url);
 
     switch (url.pathname) {
-      // Use Split SDK to evaluate a feature. Request example `/get-treatment?key=some_key&split=some_split`
+      // Use Split SDK to evaluate a feature flag. Request example `/get-treatment?key=some_key&featureFlag=some_feature_flag_name`
       case "/get-treatment":
         return handleGetTreatmentRequest(url, env);
 
@@ -68,13 +68,13 @@ function getSplitStorage(env: Env) {
   return env.SplitStorage.get(id);
 }
 
-// Use Split SDK to evaluate a feature
+// Use Split SDK to evaluate a feature flag
 async function handleGetTreatmentRequest(url: URL, env: Env) {
   const key = url.searchParams.get("key");
   if (!key) return new Response("No key provided", { status: 400 });
 
-  const split = url.searchParams.get("split");
-  if (!split) return new Response("No split provided", { status: 400 });
+  const featureFlagName = url.searchParams.get("featureFlag");
+  if (!featureFlagName) return new Response("No feature flag name provided", { status: 400 });
 
   // SDK instances are created in 'consumer_partial' mode, which access
   // the Split Storage to get the rollout plan data for evaluations
@@ -104,7 +104,7 @@ async function handleGetTreatmentRequest(url: URL, env: Env) {
   });
 
   // Async evaluation, because it access the rollout plan from the Split Storage
-  const treatment = await client.getTreatment(split);
+  const treatment = await client.getTreatment(featureFlagName);
 
   // Flush data to Split backend. But not await, in order to reduce response latency
   client.destroy();
