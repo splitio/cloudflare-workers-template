@@ -40,7 +40,7 @@ wrangler generate [your-project-name] https://github.com/splitio/cloudflare-work
 
 4. Update your `account_id` in the `wrangler.toml` file. You can get it from the Cloudlfare dashboard or running `wrangler dev`.
 
-5. Update your `apiKey` in `src/index.ts` with your Split server-side API key. You can get it from the [Split Web console](https://help.split.io/hc/en-us/articles/360019916211-API-keys).
+5. Update your `sdkKey` in `src/index.ts` with your Split server-side SDK key. You can get it from the [Split user interface](https://help.split.io/hc/en-us/articles/360019916211-API-keys).
 
 6. Deploy your worker, locally with `wrangler dev` or in Cloudflare with `wrangler publish`.
 
