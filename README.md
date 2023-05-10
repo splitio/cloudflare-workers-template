@@ -56,7 +56,7 @@ curl 'https://<YOUR-WORKER-DOMAIN>/sync'
 Then you can send a request to `/get-treatment`, which simply evaluates a given feature flag with a given user key, provided as query params, and returns a treatment.
 
 ```bash
-curl 'https://<YOUR-WORKER-DOMAIN>/get-treatment?key=<SOME-USER-ID>&featureFlag=<SOME-FEATURE-FLAG-NAME>'
+curl 'https://<YOUR-WORKER-DOMAIN>/get-treatment?key=<SOME-USER-ID>&feature-flag=<SOME-FEATURE-FLAG-NAME>'
 // Treatment: on
 ```
 

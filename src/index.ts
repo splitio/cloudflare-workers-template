@@ -24,7 +24,7 @@ export default {
     const url = new URL(request.url);
 
     switch (url.pathname) {
-      // Use Split SDK to evaluate a feature flag. Request example `/get-treatment?key=some_key&featureFlag=some_feature_flag_name`
+      // Use Split SDK to evaluate a feature flag. Request example `/get-treatment?key=some_key&feature-flag=some_feature_flag_name`
       case "/get-treatment":
         return handleGetTreatmentRequest(url, env);
 
@@ -73,7 +73,7 @@ async function handleGetTreatmentRequest(url: URL, env: Env) {
   const key = url.searchParams.get("key");
   if (!key) return new Response("No key provided", { status: 400 });
 
-  const featureFlagName = url.searchParams.get("featureFlag");
+  const featureFlagName = url.searchParams.get("feature-flag");
   if (!featureFlagName) return new Response("No feature flag name provided", { status: 400 });
 
   // SDK instances are created in 'consumer_partial' mode, which access
