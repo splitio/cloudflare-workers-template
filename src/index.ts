@@ -24,7 +24,7 @@ export default {
     const url = new URL(request.url);
 
     switch (url.pathname) {
-      // Use Split SDK to evaluate a feature. Request example `/get-treatment?key=some_key&split=some_split`
+      // Use Split SDK to evaluate a feature flag. Request example `/get-treatment?key=some_key&feature-flag=some_feature_flag_name`
       case "/get-treatment":
         return handleGetTreatmentRequest(url, env);
 
@@ -56,31 +56,31 @@ interface Env {
   SplitStorage: DurableObjectNamespace;
 }
 
-// Server-side API key is required for Synchronizer and sufficient for JS Browser SDK
-const apiKey = "<YOUR SERVER-SIDE API KEY>";
+// Server-side SDK key is required for Synchronizer and sufficient for JS Browser SDK
+const sdkKey = "<YOUR-SERVER-SIDE-SDK-KEY>";
 
 // Get reference to Split Storage durable object
 function getSplitStorage(env: Env) {
-  // Here we use Split API key as durable object name, but any name can be used.
-  // Actually, multiple SDKs with different API keys could access the same durable object,
+  // Here we use Split SDK key as durable object name, but any name can be used.
+  // Actually, multiple SDKs with different SDK keys could access the same durable object,
   // as long as they set different storage prefixes to avoid data collisions.
-  const id = env.SplitStorage.idFromName(apiKey);
+  const id = env.SplitStorage.idFromName(sdkKey);
   return env.SplitStorage.get(id);
 }
 
-// Use Split SDK to evaluate a feature
+// Use Split SDK to evaluate a feature flag
 async function handleGetTreatmentRequest(url: URL, env: Env) {
   const key = url.searchParams.get("key");
   if (!key) return new Response("No key provided", { status: 400 });
 
-  const split = url.searchParams.get("split");
-  if (!split) return new Response("No split provided", { status: 400 });
+  const featureFlagName = url.searchParams.get("feature-flag");
+  if (!featureFlagName) return new Response("No feature flag name provided", { status: 400 });
 
   // SDK instances are created in 'consumer_partial' mode, which access
   // the Split Storage to get the rollout plan data for evaluations
   const factory = SplitFactory({
     core: {
-      authorizationKey: apiKey,
+      authorizationKey: sdkKey,
       key
     },
     mode: "consumer_partial",
@@ -104,7 +104,7 @@ async function handleGetTreatmentRequest(url: URL, env: Env) {
   });
 
   // Async evaluation, because it access the rollout plan from the Split Storage
-  const treatment = await client.getTreatment(split);
+  const treatment = await client.getTreatment(featureFlagName);
 
   // Flush data to Split backend. But not await, in order to reduce response latency
   client.destroy();
@@ -117,7 +117,7 @@ async function handleGetTreatmentRequest(url: URL, env: Env) {
 async function handleSynchronization(env: Env) {
   const synchronizer = new Synchronizer({
     core: {
-      authorizationKey: apiKey
+      authorizationKey: sdkKey
     },
     storage: {
       type: "PLUGGABLE",

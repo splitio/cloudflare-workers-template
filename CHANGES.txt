@@ -1,3 +1,7 @@
+1.1.1 (May 15, 2023)
+ - Updated terminology on the SDKs codebase to be more aligned with current standard without causing a breaking change. The core change is the term split for feature flag on things like logs and IntelliSense comments.
+ - Updated Javascript Sync Tools and Browser SDK dependencies.
+
 1.1.0 (October 5, 2022)
  - Updated Javascript Sync Tools and Browser SDK dependencies, which include support for OPTIMIZED and NONE impression modes.
  - Updated dependencies for vulnerability fixes.
