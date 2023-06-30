@@ -87,10 +87,6 @@ async function handleGetTreatmentRequest(url: URL, env: Env) {
     storage: PluggableStorage({
       wrapper: SplitStorageWrapper(getSplitStorage(env))
     }),
-    startup: {
-      // If for some reason `getSplitStorage` cannot retrieve an instance, the SDK will time out almost immediately
-      readyTimeout: 0.001
-    },
     // Disable or keep only ERROR log level in production, to minimize performance impact
     debug: ErrorLogger()
   });
