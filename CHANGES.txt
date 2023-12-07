@@ -1,3 +1,6 @@
+1.2.0 (December 12, 2023)
+ - Updated Javascript Sync Tools to version 0.5.0 and Browser SDK to version 0.13.0, which include support for flag sets in consumer modes.
+
 1.1.2 (June 30, 2023)
  - Updated Javascript Browser SDK dependency.
 
