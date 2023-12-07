@@ -123,6 +123,12 @@ async function handleSynchronization(env: Env) {
     debug: "ERROR"
   });
 
-  await synchronizer.execute();
-  return new Response("Synchronization finished");
+  try {
+    await new Promise<void>((res, rej) => {
+      synchronizer.execute((error) => error ? rej(error) : res());
+    });
+    return new Response("Synchronization finished");
+  } catch (error) {
+    return new Response(`Synchronization failed with error: ${error}`, { status: 500 });
+  }
 }
