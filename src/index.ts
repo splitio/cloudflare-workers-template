@@ -74,7 +74,8 @@ async function handleGetTreatmentRequest(url: URL, env: Env) {
   if (!key) return new Response("No key provided", { status: 400 });
 
   const featureFlagName = url.searchParams.get("feature-flag");
-  if (!featureFlagName) return new Response("No feature flag name provided", { status: 400 });
+  if (!featureFlagName)
+    return new Response("No feature flag name provided", { status: 400 });
 
   // SDK instances are created in 'consumer_partial' mode, which access
   // the Split Storage to get the rollout plan data for evaluations
@@ -125,10 +126,12 @@ async function handleSynchronization(env: Env) {
 
   try {
     await new Promise<void>((res, rej) => {
-      synchronizer.execute((error) => error ? rej(error) : res());
+      synchronizer.execute(error => (error ? rej(error) : res()));
     });
     return new Response("Synchronization finished");
   } catch (error) {
-    return new Response(`Synchronization failed with error: ${error}`, { status: 500 });
+    return new Response(`Synchronization failed with error: ${error}`, {
+      status: 500
+    });
   }
 }
