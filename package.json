@@ -22,7 +22,7 @@
     "typescript": "^4.4.4"
   },
   "dependencies": {
-    "@splitsoftware/splitio-browserjs": "0.13.0",
-    "@splitsoftware/splitio-sync-tools": "0.5.0"
+    "@splitsoftware/splitio-browserjs": "1.6.0",
+    "@splitsoftware/splitio-sync-tools": "1.0.0"
   }
 }

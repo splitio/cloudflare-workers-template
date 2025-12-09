@@ -1,9 +1,9 @@
-import { Synchronizer } from "@splitsoftware/splitio-sync-tools";
 import {
   SplitFactory,
   PluggableStorage,
   ErrorLogger
 } from "@splitsoftware/splitio-browserjs";
+import { Synchronizer } from "@splitsoftware/splitio-sync-tools";
 import { SplitStorageWrapper } from "./SplitStorageWrapper";
 // In order for the workers runtime to find the class that implements
 // our Durable Object namespace, we must export it from the root module.
@@ -93,12 +93,13 @@ async function handleGetTreatmentRequest(url: URL, env: Env) {
   });
   const client = factory.client();
 
-  // Await until the SDK is ready or timed out, for which treatment evaluations will be 'control'.
-  // Timed out should never happen if SplitStorage durable object binding is properly configured.
-  await new Promise(res => {
-    client.on(client.Event.SDK_READY, res);
-    client.on(client.Event.SDK_READY_TIMED_OUT, res);
-  });
+  // Wait until the SDK is ready or times out
+  try {
+    await client.whenReady();
+  } catch (e) {
+    // SDK timed out. Treatment evaluations will fall back to 'control'.
+    // This should never happen if SplitStorage durable object binding is properly configured.
+  }
 
   // Async evaluation, because it access the rollout plan from the Split Storage
   const treatment = await client.getTreatment(featureFlagName);
